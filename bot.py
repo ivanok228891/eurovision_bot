@@ -1,11 +1,17 @@
 import asyncio
 import logging
 import random
+import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ConversationHandler, ContextTypes
 
 # ========== НАСТРОЙКИ ==========
-TOKEN = "8667927741:AAEkWQWm12aRaOvCG8DTZ4S-d4g7vzrGrXo"
+# БЕРИ ТОКЕН ИЗ ПЕРЕМЕННЫХ ОКРУЖЕНИЯ (БЕЗОПАСНО!)
+TOKEN = os.environ.get('TELEGRAM_TOKEN')
+
+# Если токен не найден, выводим ошибку
+if not TOKEN:
+    raise ValueError("❌ Токен не найден! Установи переменную TELEGRAM_TOKEN в Render")
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -468,6 +474,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def main():
     """Запуск бота"""
+    # Исправленный синтаксис для версии 21.x
     app = Application.builder().token(TOKEN).build()
     
     conv_handler = ConversationHandler(
@@ -492,7 +499,11 @@ def main():
     print("🚀 Бот запущен! Напиши /start в Telegram")
     print("📊 Нажми Ctrl+C для остановки")
     
-    app.run_polling()
+    # Запускаем с обработкой ошибок
+    try:
+        app.run_polling()
+    except Exception as e:
+        print(f"❌ Ошибка: {e}")
 
 if __name__ == "__main__":
     main()
